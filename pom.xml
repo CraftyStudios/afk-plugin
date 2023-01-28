@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <mc.version>1.19</mc.version>                       <!-- default mc version -->
+        <plugins.dir>${project.basedir}/out</plugins.dir>   <!-- default output dir -->
+    </properties>
+
+    <groupId>CraftyStudios</groupId>
+    <artifactId>afk-plugin</artifactId>
+    <version>1.0 SNAPSHOT</version>
+
+    <repositories>
+    <repository>
+        <id>sk89q-repo</id>
+        <url>https://maven.enginehub.org/repo/</url>
+    </repository>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+    </repositories>
+
+    <dependencies>
+        <!-- spigot api -->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>${mc.version}-R0.1-SNAPSHOT</version>
+        </dependency>
+        <!-- plugin annotations -->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>plugin-annotations</artifactId>
+            <version>1.2.3-SNAPSHOT</version>
+        </dependency>
+
+        <!-- worldguard -->
+        <dependency>
+            <groupId>com.sk89q.worldguard</groupId>
+            <artifactId>worldguard-bukkit</artifactId>
+            <version>7.0.7</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- worldedit -->
+        <dependency>
+            <groupId>com.sk89q.worldedit</groupId>
+            <artifactId>worldedit-bukkit</artifactId>
+            <version>7.2.8</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- worldguard-extra -->
+        <dependency>
+	    <groupId>com.github.NetzkroneHD</groupId>
+	    <artifactId>WGRegionEvents</artifactId>
+	    <version>v1.7.3</version>
+        </dependency>
+        <dependency>
+        <groupId>com.github.MilkBowl</groupId>
+        <artifactId>VaultAPI</artifactId>
+        <version>1.7</version>
+        <scope>provided</scope>
+    </dependency>
+
+
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}-${mc.version}-${project.version}</finalName>
+        <directory>${plugins.dir}</directory>
+    </build>
+</project>

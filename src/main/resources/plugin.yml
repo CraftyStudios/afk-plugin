@@ -1,0 +1,5 @@
+name: AFK Region Rewards
+version: 1.0
+description: Give players rewards for being in a region!
+depend: [WorldGuard, WorldEdit, WGRegionEvents]
+commands:
