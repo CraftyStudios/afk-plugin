@@ -16,3 +16,5 @@ afk-rewards:
     reward: "emerald x10"
   - time: 900
     reward: "golden apple x1"
+    money-reward: 1000
+    
