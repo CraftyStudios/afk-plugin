@@ -8,13 +8,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <mc.version>1.19</mc.version>                       <!-- default mc version -->
+        <mc.version>1.19.2</mc.version>                       <!-- default mc version -->
         <plugins.dir>${project.basedir}/out</plugins.dir>   <!-- default output dir -->
     </properties>
 
-    <groupId>CraftyStudios</groupId>
-    <artifactId>afk-plugin</artifactId>
-    <version>1.0 SNAPSHOT</version>
+    <groupId>Incbom</groupId>
+    <artifactId>afk_plugin</artifactId>
+    <version>1.0.3</version>
 
     <repositories>
     <repository>
@@ -29,6 +29,10 @@
 		    <id>jitpack.io</id>
 		    <url>https://jitpack.io</url>
 		</repository>
+                <repository>
+            <id>placeholderapi</id>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -65,12 +69,29 @@
 	    <artifactId>WGRegionEvents</artifactId>
 	    <version>v1.7.3</version>
         </dependency>
+        <!-- Vault -->
         <dependency>
         <groupId>com.github.MilkBowl</groupId>
         <artifactId>VaultAPI</artifactId>
         <version>1.7</version>
         <scope>provided</scope>
     </dependency>
+    <!-- PlaceholderAPI -->
+            <dependency>
+         <groupId>me.clip</groupId>
+          <artifactId>placeholderapi</artifactId>
+          <version>2.11.2</version>
+         <scope>provided</scope>
+         </dependency>
+    <!--Sentry-->
+    <dependency>
+    <groupId>io.sentry</groupId>
+    <artifactId>sentry</artifactId>
+    <version>6.13.0</version>
+</dependency>
+
+ 
+        
 
 
     </dependencies>
@@ -78,5 +99,6 @@
     <build>
         <finalName>${project.artifactId}-${mc.version}-${project.version}</finalName>
         <directory>${plugins.dir}</directory>
+        
     </build>
 </project>

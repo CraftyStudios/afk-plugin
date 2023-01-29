@@ -3,35 +3,36 @@ package me.Incbom.afk;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.event.EventHandler;
 import de.netzkronehd.wgregionevents.events.RegionEnterEvent;
-import de.netzkronehd.wgregionevents.events.RegionEnteredEvent;
 import de.netzkronehd.wgregionevents.events.RegionLeaveEvent;
-import de.netzkronehd.wgregionevents.events.RegionLeftEvent;
 import org.bukkit.event.Listener;
-
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
+
+import me.Incbom.afk.Commands.afkregion;
+import me.Incbom.afk.Commands.afkreload;
+import me.Incbom.afk.Commands.afkrewards;
 import me.Incbom.afk.utils.Logger;
-import org.bukkit.event.player.PlayerMoveEvent;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.HashMap;
 import java.util.List;
 import net.milkbowl.vault.economy.Economy;
-
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.command.Command;
 
+
+  
 
 public final class Main extends JavaPlugin implements Listener {
   public WorldGuardPlugin worldguardplugin; 
+
   
             /* May clean up later into /listeners folder */
+
+
 
  
 
@@ -83,66 +84,7 @@ public final class Main extends JavaPlugin implements Listener {
             
             
             
-          
-
-
-
-
-
-
-
-            /* Add + 1 every second in the afk zone */
       
-      
-          /*   @EventHandler
-            public void onRegionEnter(RegionEnterEvent e) {
-              for (e.getRegion().getId().equals(this.getConfig().getString("afk-region")); afktime < 60; afktime++) {
-                afktime = afktime + 1;
-              }
-
-                if (afktime == (this.getConfig().getInt("afk-time"))) {
-                  e.getPlayer().sendMessage("You have been afk for 1 minute.");
-                  afktime = 0;
-                }else {
-                afktime = afktime;
-                }
-            }
-          }
-            @EventHandler
-            public void onRegionEnter(RegionEnterEvent e) {
-              if (e.getRegion().getId().equals(this.getConfig().getString("afk-region"))) {
-                e.getPlayer().sendMessage("You are entering§e "+e.getRegion().getId()+"§7.");
-              }else {
-              }
-            }
-            @EventHandler
-            public void onRegionEntered(RegionEnteredEvent e) {
-              if (e.getRegion().getId().equals(this.getConfig().getString("afk-region"))) {
-                afktime = afktime + 1; 
-                if (afktime == 60) {
-                  e.getPlayer().sendMessage("You have been afk for 1 minute.");
-                  afktime = 0;
-                }else {           
-                  afktime = afktime;
-                }
-              }
-            }
-            @EventHandler
-            public void onRegionLeave(RegionLeaveEvent e) {
-              if (e.getRegion().getId().equals(this.getConfig().getString("afk-region"))) {
-                afktime = 0;
-              }else {
-              }
-            }
-            @EventHandler
-            public void onRegionLeft(RegionLeftEvent e) {
-              if (e.getRegion().getId().equals(this.getConfig().getString("afk-region"))) {
-                afktime = 0;
-              }else {
-              }
-            }
-      
-       */
             
       
           
@@ -151,14 +93,31 @@ public final class Main extends JavaPlugin implements Listener {
     public void onLoad() {
     }
 
+
     @Override
     public void onEnable() {
+      saveDefaultConfig();
       Bukkit.getPluginManager().registerEvents(this, this);
       worldguardplugin = getWorldGuard();
       Logger.log(Logger.LogLevel.OUTLINE, "------------------------------------");
       Logger.log(Logger.LogLevel.SUCCESS, "Loading AFK Rewards...");
       Logger.log(Logger.LogLevel.SUCCESS, "Loaded!");
       Logger.log(Logger.LogLevel.OUTLINE, "------------------------------------");
+      Command command = getCommand("afkrewards");
+      Command command2 = getCommand("afkregion");
+      Command command3 = getCommand("afkreload");
+      afkrewards afkrewards = new afkrewards(this);
+      afkregion afkregion = new afkregion(this);
+      afkreload afkreload = new afkreload(this);
+      this.getCommand("afkreload").setExecutor(afkreload);
+      this.getCommand("afkreload").setTabCompleter(afkreload);
+      this.getCommand("afkrewards").setExecutor(afkrewards);
+      this.getCommand("afkregion").setExecutor(afkregion);
+      this.getCommand("afkrewards").setTabCompleter(afkrewards);
+      this.getCommand("afkregion").setTabCompleter(afkregion);
+
+
+
 
 
     }
@@ -170,6 +129,7 @@ public final class Main extends JavaPlugin implements Listener {
       Logger.log(Logger.LogLevel.SUCCESS, "Unloading AFK Rewards...");
       Logger.log(Logger.LogLevel.SUCCESS, "Unloaded!");
       Logger.log(Logger.LogLevel.OUTLINE, "------------------------------------");
+      this.saveConfig();
       }
       public WorldGuardPlugin getWorldGuard() {
         org.bukkit.plugin.Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
@@ -178,5 +138,5 @@ public final class Main extends JavaPlugin implements Listener {
         }
         return (WorldGuardPlugin) plugin;
       }
-      
-  }
+    }
+  

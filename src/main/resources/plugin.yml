@@ -1,5 +1,22 @@
-name: AFK Region Rewards
+name: AFK_Rewards
 version: 1.0
-description: Give players rewards for being in a region!
-depend: [WorldGuard, WorldEdit, WGRegionEvents]
+main: me.Incbom.afk.Main
+depennd: [WorldGuard, Vault, WorldEdit, WGRegionEvents]
 commands:
+  afk:
+    description: AFK main command
+    usage: '/afk'
+    aliases: [afkrewards, afk]
+    permission: afk.main
+    permission-message: You do not have permission to use this command
+  afkregion:
+    description: Manages AFK regions
+    usage: '/afkregion'
+    permission: afk.regions
+    permission-message: You do not have permission to use this command
+  afkreload:
+    description: Reloads the config
+    usage: '/afkreload'
+    permission: afk.reload
+    permission-message: You do not have permission to use this command
+

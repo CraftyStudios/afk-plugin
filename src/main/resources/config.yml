@@ -1,19 +1,18 @@
 # MAIN CONFIG FILE FOR AFK REWARDS
 
-# WorldGuard Region where the rewards will be given
-afk-region: "afk"
+# CONFIGURATION STARTS HERE:
+afk-region: "afk" # Change this to your WorldGuardRegion
+afk-time-limit: 1800 # time in seconds before the player is considered AFK
 
-# Time limit for AFK rewards in seconds
-afk-time-limit: 900
+# These are the messages that are sent to the player when they use the command
+Prefix: '&7[&bAFK Rewards&7]'
+no-permission: '&cYou do not have permission to use this command'
+reload: '&aSuccessfully reloaded the config!'
 
-# Rewards for reaching the AFK time limit
 afk-rewards:
   - time: 300
-    item-reward: "diamond x5"
-    money-reward: "50"
+    reward: "diamond x5"
   - time: 600
-    item-reward: "emerald x10"
-    money-reward: "100"
+    reward: "emerald x10"
   - time: 900
-    item-reward: "golden_apple x1"
-    money-reward: "200"
+    reward: "golden apple x1"
