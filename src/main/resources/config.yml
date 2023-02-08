@@ -3,11 +3,13 @@
 # CONFIGURATION STARTS HERE:
 afk-region: "afk" # Change this to your WorldGuardRegion
 afk-time-limit: 1800 # time in seconds before the player is considered AFK
+boss-bar: true # Enable or disable the boss bar that shows when in the AFK region
 
 # These are the messages that are sent to the player when they use the command
 Prefix: '&7[&bAFK Rewards&7]'
 no-permission: '&cYou do not have permission to use this command'
 reload: '&aSuccessfully reloaded the config!'
+boss-bar-message: 'You have been afk for {afktime} seconds!' # {afktime} is the time the player has been afk for
 
 afk-rewards:
   - time: 300

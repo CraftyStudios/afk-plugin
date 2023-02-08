@@ -13,8 +13,8 @@
     </properties>
 
     <groupId>Incbom</groupId>
-    <artifactId>afk_plugin</artifactId>
-    <version>1.0.3</version>
+    <artifactId>afk-plugin-STABLE</artifactId>
+    <version>1.0.4</version>
 
     <repositories>
     <repository>
