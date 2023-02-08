@@ -5,8 +5,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import io.sentry.internal.gestures.GestureTargetLocator;
-
 import java.util.ArrayList;
 import java.util.List;
 

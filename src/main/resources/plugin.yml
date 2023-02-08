@@ -2,6 +2,7 @@ name: AFK_Rewards
 version: 1.0
 main: me.Incbom.afk.Main
 depennd: [WorldGuard, Vault, WorldEdit, WGRegionEvents]
+api-version: 1.19.2
 commands:
   afk:
     description: AFK main command

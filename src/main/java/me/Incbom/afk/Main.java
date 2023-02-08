@@ -9,7 +9,6 @@ import de.netzkronehd.wgregionevents.events.RegionLeaveEvent;
 import org.bukkit.event.Listener;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
 import me.Incbom.afk.Commands.afkregion;
 import me.Incbom.afk.Commands.afkreload;
 import me.Incbom.afk.Commands.afkrewards;
@@ -18,8 +17,14 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.HashMap;
 import java.util.List;
+
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.command.Command;
 
@@ -39,11 +44,22 @@ public final class Main extends JavaPlugin implements Listener {
             private final Map<Player, Integer> afkTime = new HashMap<>();
             private final AtomicInteger afkTimeCounter = new AtomicInteger();
            private Economy economy;
+           BarColor barColor = BarColor.valueOf(this.getConfig().getString("boss-bar-color").toUpperCase());
+           BossBar bossBar = Bukkit.createBossBar(getConfig().getString("boss-bar-message").replace("{afktime}", Integer.toString(afkTimeCounter.get())), barColor, BarStyle.SOLID);
+           
             
             @EventHandler
             public void onRegionEnter(RegionEnterEvent e) {
+                
                 Player player = e.getPlayer();
                 String regionId = e.getRegion().getId();
+     
+
+    // parse the color from the config string
+    
+
+  
+
                 if (regionId.equals(this.getConfig().getString("afk-region"))) {
                     int afkTime = this.afkTime.getOrDefault(player, 0);
                     afkTimeCounter.set(afkTime);
@@ -53,10 +69,26 @@ public final class Main extends JavaPlugin implements Listener {
                         }
                     }, 20L, 20L);
                 }
+                if (this.getConfig().getBoolean("boss-bar")) {
+                    
+                    
+                    bossBar.addPlayer(player);
+                    Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+                      public void run() {
+                        bossBar.setTitle(getConfig().getString("boss-bar-message").replace("{afktime}", Integer.toString(afkTimeCounter.get())));
+                       
+                        bossBar.setProgress(afkTimeCounter.get() / (double) getConfig().getInt("afk-time-limit"));
+                      }
+                    }, 20L, 20L);  
+                  }
             }
+
+            
+            
             
             @EventHandler
             public void onRegionLeave(RegionLeaveEvent e) {
+                
                 Player player = e.getPlayer();
                 String regionId = e.getRegion().getId();
                 if (regionId.equals(this.getConfig().getString("afk-region"))) {
@@ -77,6 +109,8 @@ public final class Main extends JavaPlugin implements Listener {
                     }
                     // Remove the task that increments the AFK time
                     Bukkit.getScheduler().cancelTasks(this);
+                    bossBar.removePlayer(player);
+
                     // Reset the AFK time for the player
                     this.afkTime.put(player, 0);
                 }
