@@ -37,15 +37,16 @@ public class afkreload implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
-            if (args.length == 0) {
-                if (sender.hasPermission("afkrewards.help")) {
+            
+                if (sender.hasPermission("afkrewards.reload")) {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Prefix") +plugin.getConfig().getString("reload")));
+                    plugin.saveConfig();
                     plugin.reloadConfig();
                     return true;
                 } else {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Prefix") + plugin.getConfig().getString("no-permission")));
                 }
-}return false;
+return false;
     }
 }
 
