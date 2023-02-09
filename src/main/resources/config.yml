@@ -10,6 +10,7 @@ Prefix: '&7[&bAFK Rewards&7]'
 no-permission: '&cYou do not have permission to use this command'
 reload: '&aSuccessfully reloaded the config!'
 boss-bar-message: 'You have been afk for {afktime} seconds!' # {afktime} is the time the player has been afk for
+boss-bar-color: RED
 
 afk-rewards:
   - time: 300
