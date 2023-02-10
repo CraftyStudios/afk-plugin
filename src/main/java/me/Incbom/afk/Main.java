@@ -16,17 +16,14 @@ import me.Incbom.afk.utils.Logger;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.HashMap;
+import org.bukkit.command.Command;
 import java.util.List;
-
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.command.Command;
 
 
   
@@ -38,8 +35,11 @@ public final class Main extends JavaPlugin implements Listener {
             /* May clean up later into /listeners folder */
 
 
+            private Map<Player, Double> afkSpentMoney = new HashMap<>();
 
  
+        
+
 
             private final Map<Player, Integer> afkTime = new HashMap<>();
             private final AtomicInteger afkTimeCounter = new AtomicInteger();
@@ -69,6 +69,7 @@ public final class Main extends JavaPlugin implements Listener {
                         }
                     }, 20L, 20L);
                 }
+               
                 if (this.getConfig().getBoolean("boss-bar")) {
                     
                     
@@ -81,8 +82,13 @@ public final class Main extends JavaPlugin implements Listener {
                       }
                     }, 20L, 20L);  
                   }
-            }
+                  if (this.getConfig().getBoolean("afk-spent-money") == true) {
+                    double moneySpent = economy.getBalance(player);
+                    afkSpentMoney.put(player, moneySpent);
+                  
 
+            }
+          }
             
             
             
@@ -103,6 +109,9 @@ public final class Main extends JavaPlugin implements Listener {
                             ItemStack itemStack = new ItemStack(material, 1);
                             player.getInventory().addItem(itemStack);
                         }
+                        String command = this.getConfig().getString("command").replace("%player%", player.getName());
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+
                         //Retrieving the money reward from the config
                         double moneyReward = this.getConfig().getDouble("money-reward");
                        economy.depositPlayer(player, moneyReward);
@@ -114,7 +123,8 @@ public final class Main extends JavaPlugin implements Listener {
                     // Reset the AFK time for the player
                     this.afkTime.put(player, 0);
                 }
-            }
+              }
+            
             
             
             
@@ -130,6 +140,25 @@ public final class Main extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+      /*if (Bukkit.getPluginManager().getPlugin("WorldGuardRegionEvents") != null) {
+        Logger.log(Logger.LogLevel.OUTLINE, "------------------------------------");
+        Logger.log(Logger.LogLevel.SUCCESS, "WorldGuardRegionEvents found!");
+        Logger.log(Logger.LogLevel.OUTLINE, "------------------------------------");
+
+        Bukkit.getPluginManager().registerEvents(this, this);
+    } else {
+        Logger.log(Logger.LogLevel.OUTLINE, "------------------------------------");
+        Logger.log(Logger.LogLevel.ERROR, "WorldGuardRegionEvents not found!");
+        Logger.log(Logger.LogLevel.ERROR, "Please install WorldGuardRegionEvents to use this plugin!");
+        Logger.log(Logger.LogLevel.ERROR, "https://www.spigotmc.org/resources/worldguard-region-events-updated.61490/");
+        Logger.log(Logger.LogLevel.ERROR, "Disabling plugin...");
+        Logger.log(Logger.LogLevel.OUTLINE, "------------------------------------");
+
+        Bukkit.getPluginManager().disablePlugin(this);
+    }*/
+
+
+    
       saveDefaultConfig();
       Bukkit.getPluginManager().registerEvents(this, this);
       worldguardplugin = getWorldGuard();

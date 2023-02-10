@@ -20,7 +20,7 @@ public class afkreload implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
         List<String> completions = new ArrayList<>();
-        if (cmd.getName().equalsIgnoreCase("afkrewards")) {
+        if (cmd.getName().equalsIgnoreCase("afkreload")) {
             if (args.length == 1) {
                 // Add possible subcommands to the completions list
             }
@@ -38,8 +38,9 @@ public class afkreload implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
             if (args.length == 0) {
-                if (sender.hasPermission("afkrewards.help")) {
+                if (sender.hasPermission("afkrewards.reload")) {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Prefix") +plugin.getConfig().getString("reload")));
+                    plugin.saveDefaultConfig();
                     plugin.reloadConfig();
                     return true;
                 } else {
