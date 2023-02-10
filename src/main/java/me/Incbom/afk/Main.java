@@ -144,7 +144,7 @@ public final class Main extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-      /*if (Bukkit.getPluginManager().getPlugin("WorldGuardRegionEvents") != null) {
+      if (getServer().getPluginManager().getPlugin("WGRegionEvents") != null) {
         Logger.log(Logger.LogLevel.OUTLINE, "------------------------------------");
         Logger.log(Logger.LogLevel.SUCCESS, "WorldGuardRegionEvents found!");
         Logger.log(Logger.LogLevel.OUTLINE, "------------------------------------");
@@ -159,7 +159,7 @@ public final class Main extends JavaPlugin implements Listener {
         Logger.log(Logger.LogLevel.OUTLINE, "------------------------------------");
 
         Bukkit.getPluginManager().disablePlugin(this);
-    }*/
+    }
 
 
     
