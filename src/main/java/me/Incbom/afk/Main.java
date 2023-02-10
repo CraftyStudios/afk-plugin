@@ -92,42 +92,46 @@ public final class Main extends JavaPlugin implements Listener {
             
             
             
-            @EventHandler
-            public void onRegionLeave(RegionLeaveEvent e) {
-                
-                Player player = e.getPlayer();
-                String regionId = e.getRegion().getId();
-                if (regionId.equals(this.getConfig().getString("afk-region"))) {
-                    // Get the current AFK time for the player
-                    int afkTime = this.afkTime.getOrDefault(player, 0);
-                    //Checking the afk time if it's greater than the time you set in the config
-                    if (afkTime > this.getConfig().getInt("afk-time-limit")){
-                        //Retrieving the rewards from the config
-                        List<String> rewards = this.getConfig().getStringList("rewards");
-                        for (String item : rewards) {
-                            Material material = Material.valueOf(item);
-                            ItemStack itemStack = new ItemStack(material, 1);
-                            player.getInventory().addItem(itemStack);
-                        }
-                        String command = this.getConfig().getString("command").replace("%player%", player.getName());
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+          @EventHandler
+ public void onRegionLeave(RegionLeaveEvent e) {
+     Player player = e.getPlayer();
+     String regionId = e.getRegion().getId();
+     if (regionId.equals(this.getConfig().getString("afk-region"))) {
+         // Get the current AFK time for the player
+         int afkTime = this.afkTime.getOrDefault(player, 0);
+         // Check the rewards list to see if the AFK time matches any of the times in the list
+         List < Map < ? , ? >> rewards = this.getConfig().getMapList("afk-rewards");
 
-                        //Retrieving the money reward from the config
-                        double moneyReward = this.getConfig().getDouble("money-reward");
-                       economy.depositPlayer(player, moneyReward);
-                    }
-                    // Remove the task that increments the AFK time
-                    Bukkit.getScheduler().cancelTasks(this);
-                    bossBar.removePlayer(player);
-
-                    // Reset the AFK time for the player
-                    this.afkTime.put(player, 0);
-                }
-              }
-            
-            
-            
-            
+         for (Map < ? , ? > reward : rewards) {
+             int time = (int) reward.get("time");
+             if (afkTime >= time) {
+                 String rewardString = (String) reward.get("reward");
+                 String[] items = rewardString.split(" ");
+                 Material material = Material.valueOf(items[0]);
+                 int amount = Integer.parseInt(items[1].substring(1));
+                 ItemStack itemStack = new ItemStack(material, amount);
+                 player.getInventory().addItem(itemStack);
+                 // Check if there is a command associated with the reward
+                 if (reward.containsKey("command")) {
+                     String command = (String) reward.get("command");
+                     command = command.replace("{player}", player.getName());
+                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+                 }
+                 // Check if there is a money reward associated with the reward
+                 if (reward.containsKey("money-reward")) {
+                     double moneyReward = (double) reward.get("money-reward");
+                     economy.depositPlayer(player, moneyReward);
+                 }
+                 break;
+             }
+         }
+         // Remove the task that increments the AFK time
+         Bukkit.getScheduler().cancelTasks(this);
+         bossBar.removePlayer(player);
+         // Reset the AFK time for the player
+         this.afkTime.put(player, 0);
+     }
+ }
       
             
       
