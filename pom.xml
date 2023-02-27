@@ -8,7 +8,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <mc.version>1.19.2</mc.version>                       <!-- default mc version -->
+        <mc.version>1.19.3</mc.version>                       <!-- default mc version -->
         <plugins.dir>${project.basedir}/out</plugins.dir>   <!-- default output dir -->
     </properties>
 
