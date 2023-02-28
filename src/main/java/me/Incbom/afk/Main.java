@@ -18,8 +18,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.HashMap;
 import java.util.List;
 
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
 import org.bukkit.boss.BarColor;
@@ -27,109 +25,128 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.command.Command;
+import org.bukkit.command.ConsoleCommandSender;
 
 
   
 
 public final class Main extends JavaPlugin implements Listener {
-  public WorldGuardPlugin worldguardplugin; 
-
+  public WorldGuardPlugin worldguardplugin;
+  private final Map<Player, Integer> afkTime = new HashMap<>();
+  private final AtomicInteger afkTimeCounter = new AtomicInteger();
+  private Economy economy;
+  BarColor barColor = BarColor.valueOf(this.getConfig().getString("boss-bar-color").toUpperCase());
+  BossBar bossBar = Bukkit.createBossBar(getConfig().getString("boss-bar-message").replace("{afktime}", Integer.toString(afkTimeCounter.get())), barColor, BarStyle.SOLID);
   
-            /* May clean up later into /listeners folder */
-
-
-
- 
-
-            private final Map<Player, Integer> afkTime = new HashMap<>();
-            private final AtomicInteger afkTimeCounter = new AtomicInteger();
-           private Economy economy;
-           BarColor barColor = BarColor.valueOf(this.getConfig().getString("boss-bar-color").toUpperCase());
-           BossBar bossBar = Bukkit.createBossBar(getConfig().getString("boss-bar-message").replace("{afktime}", Integer.toString(afkTimeCounter.get())), barColor, BarStyle.SOLID);
-           
-            
-            @EventHandler
-            public void onRegionEnter(RegionEnterEvent e) {
-                
-                Player player = e.getPlayer();
-                String regionId = e.getRegion().getId();
-     
-
-    // parse the color from the config string
-    
-
+  @EventHandler
+  public void onRegionEnter(RegionEnterEvent e) {
+      Player player = e.getPlayer();
+      String regionId = e.getRegion().getId();
   
-
-                if (regionId.equals(this.getConfig().getString("afk-region"))) {
-                    int afkTime = this.afkTime.getOrDefault(player, 0);
-                    afkTimeCounter.set(afkTime);
-                    Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
-                        public void run() {
-                            afkTimeCounter.incrementAndGet();
-                        }
-                    }, 20L, 20L);
+      if (regionId.equals(this.getConfig().getString("afk-region"))) {
+          final AtomicInteger afkTime = new AtomicInteger(this.afkTime.getOrDefault(player, 0));
+          Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+              public void run() {
+                  // Increment afkTime
+                  afkTime.incrementAndGet();
+                  // Update the afkTime value for the player
+                  afkTimeCounter.set(afkTime.get());
+                                  if (getConfig().getBoolean("Debug")) {
+                    getLogger().info(player.getName() + " has been AFK for " + afkTime.get() + " seconds");
                 }
-                if (this.getConfig().getBoolean("boss-bar")) {
-                    
-                    
-                    bossBar.addPlayer(player);
-                    Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-                      public void run() {
-                        bossBar.setTitle(getConfig().getString("boss-bar-message").replace("{afktime}", Integer.toString(afkTimeCounter.get())));
-                       
-                        bossBar.setProgress(afkTimeCounter.get() / (double) getConfig().getInt("afk-time-limit"));
+                  // Update the boss bar title with the new afk time value
+                  bossBar.setTitle(getConfig().getString("boss-bar-message").replace("{afktime}", Integer.toString(afkTime.get())));
+              }
+          }, 0L, 20L);
+      }
+  
+
+  
+      int rewardTime = this.getConfig().getInt("time");
+      List<String> rewards = this.getConfig().getStringList("afk-rewards");
+      List<Integer> money = this.getConfig().getIntegerList("money-rewards");
+      List<String> commands = this.getConfig().getStringList("console-commands");
+      int afkTime = this.afkTime.getOrDefault(player, 0);
+      String regionIdEquals = this.getConfig().getString("afk-region");
+      double progress = (double) afkTime / rewardTime;
+      if (this.getConfig().getBoolean("boss-bar")) {
+        bossBar.addPlayer(player);
+        
+
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+            public void run() {
+              if (getConfig().getBoolean("Debug")) {
+                getLogger().info("Boss bar update scheduled for " + player.getName() + " every second");
+            }
+                bossBar.setTitle(getConfig().getString("boss-bar-message").replace("{afktime}", Integer.toString(afkTimeCounter.get())));
+                bossBar.setProgress(progress);
+            }
+        }, 0L, 20L);
+    }
+  
+      Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+          public void run() {
+              if (regionId.equals(regionIdEquals)) {
+                  // Get the current AFK time for the player
+  
+                  // Checking the afk time if it's greater than the time you set in the config
+                  if (afkTime >= rewardTime) {
+                      // Give itemstacks
+                      
+                      for (String reward : rewards) {
+                          String[] parts = reward.split(" x");
+                          Material material = Material.matchMaterial(parts[0]);
+                          int quantity = Integer.parseInt(parts[1]);
+                          ItemStack itemStack = new ItemStack(material, quantity);
+                          player.getInventory().addItem(itemStack);
                       }
-                    }, 20L, 20L);  
-                  }
-            }
-
-            
-            
-            
-            @EventHandler
-            public void onRegionLeave(RegionLeaveEvent e) {
-                
-                Player player = e.getPlayer();
-                String regionId = e.getRegion().getId();
-                if (regionId.equals(this.getConfig().getString("afk-region"))) {
-                    // Get the current AFK time for the player
-                    int afkTime = this.afkTime.getOrDefault(player, 0);
-                    //Checking the afk time if it's greater than the time you set in the config
-                    if (afkTime > this.getConfig().getInt("afk-time-limit")){
-                        //Retrieving the rewards from the config
-                        List<String> rewards = this.getConfig().getStringList("rewards");
-                        for (String item : rewards) {
-                            Material material = Material.valueOf(item);
-                            ItemStack itemStack = new ItemStack(material, 1);
-                            player.getInventory().addItem(itemStack);
-                        }
-                        //Retrieving the money reward from the config
-                        double moneyReward = this.getConfig().getDouble("money-reward");
-                       economy.depositPlayer(player, moneyReward);
+                      
+  
+                      // Money Rewards
+                      for (Integer moneyReward : money) {
+                        economy.depositPlayer(player, (double)moneyReward);
                     }
-                    // Remove the task that increments the AFK time
-                    Bukkit.getScheduler().cancelTasks(this);
-                    bossBar.removePlayer(player);
+  
+                      // Execute console commands
+                      for (String command : commands) {
+                          ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+                          String command2 = command.replace("{player}", player.getName());
+                          Bukkit.dispatchCommand(console, command2);
+                      }
+                      bossBar.setProgress(0);
+                  }
+                  if (getConfig().getBoolean("Debug")) {
+                    getLogger().info(player.getName() + " has received " + money + " " + rewards + " " + commands + " for being AFK for " + afkTime + " seconds");
+                    getLogger().info(player.getName() + " has console command executed " + commands + " for them during the AFK Reward proccess");
+              }
+          }
+        }
+      }, 0L, 20L * rewardTime);
+  
 
-                    // Reset the AFK time for the player
-                    this.afkTime.put(player, 0);
-                }
-            }
+}
+  
+  @EventHandler
+  public void onRegionLeave(RegionLeaveEvent e) {
+      Player player = e.getPlayer();
+  
+      // Remove the task that increments the AFK time
+      Bukkit.getScheduler().cancelTasks(this);
+      bossBar.removePlayer(player);
+  
+      // Reset the AFK time for the player
+      this.afkTime.put(player, 0);
+  }
             
-            
-            
-      
-            
-      
-          
-
     @Override
     public void onLoad() {
     }
-
-
     @Override
     public void onEnable() {
+      if(getServer().getPluginManager().getPlugin("WGRegionEvents") == null) {
+        getServer().getPluginManager().disablePlugin(this);
+        Logger.log(Logger.LogLevel.ERROR, "WGRegionEvents not found! Disabling plugin...");
+      }
       saveDefaultConfig();
       Bukkit.getPluginManager().registerEvents(this, this);
       worldguardplugin = getWorldGuard();
@@ -149,13 +166,7 @@ public final class Main extends JavaPlugin implements Listener {
       this.getCommand("afkregion").setExecutor(afkregion);
       this.getCommand("afkrewards").setTabCompleter(afkrewards);
       this.getCommand("afkregion").setTabCompleter(afkregion);
-
-
-
-
-
-    }
-    
+    }   
 
     @Override
     public void onDisable() {
@@ -173,4 +184,3 @@ public final class Main extends JavaPlugin implements Listener {
         return (WorldGuardPlugin) plugin;
       }
     }
-  

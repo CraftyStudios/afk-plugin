@@ -1,8 +1,13 @@
-# MAIN CONFIG FILE FOR AFK REWARDS
+#           ______ _  __  _____                            _     
+#     /\   |  ____| |/ / |  __ \                          | |    
+#    /  \  | |__  | ' /  | |__) |_____      ____ _ _ __ __| |___ 
+#   / /\ \ |  __| |  <   |  _  // _ \ \ /\ / / _` | '__/ _` / __|
+#  / ____ \| |    | . \  | | \ \  __/\ V  V / (_| | | | (_| \__ \
+# /_/    \_\_|    |_|\_\ |_|  \_\___| \_/\_/ \__,_|_|  \__,_|___/
+                                                                
 
 # CONFIGURATION STARTS HERE:
 afk-region: "afk" # Change this to your WorldGuardRegion
-afk-time-limit: 1800 # time in seconds before the player is considered AFK
 boss-bar: true # Enable or disable the boss bar that shows when in the AFK region
 
 # These are the messages that are sent to the player when they use the command
@@ -10,13 +15,26 @@ Prefix: '&7[&bAFK Rewards&7] '
 no-permission: '&cYou do not have permission to use this command'
 reload: '&aSuccessfully reloaded the config!'
 boss-bar-message: 'You have been afk for {afktime} seconds!' # {afktime} is the time the player has been afk for
-boss-bar-color: 'red' # All lowercase colors
+boss-bar-color: 'blue' # Any Minecraft supported colors
+
+time: 30 # The time in seconds that the player has to be afk for to get the reward
+# Money rewards
+money-rewards:
+  - 1000 # The amount of money the player gets using Vault
+  - 2000 # The amount of money the player gets using Vault
+  - 3000 # The amount of money the player gets using Vault
+# Console commands
+console-commands:
+    - "give {player} diamond 5" # {player} is the player's name
+    - "give {player} emerald 10" # {player} is the player's name
+    - "give {player} golden_apple 1" # {player} is the player's name
+    - "say hi"
+# Item rewards
 afk-rewards:
-  - time: 300
-    reward: "diamond x5"
-  - time: 600
-    reward: "emerald x10"
-  - time: 900
-    reward: "golden apple x1"
-    money-reward: 1000
+    - "diamond x5"
+    - "emerald x10"
+    - "golden apple x1"
     
+    
+# Spams console with this error
+Debug: true
