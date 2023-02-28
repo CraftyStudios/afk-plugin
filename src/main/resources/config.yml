@@ -19,21 +19,12 @@ boss-bar-color: 'blue' # Any Minecraft supported colors
 
 time: 30 # The time in seconds that the player has to be afk for to get the reward
 # Money rewards
-money-rewards:
-  - 1000 # The amount of money the player gets using Vault
-  - 2000 # The amount of money the player gets using Vault
-  - 3000 # The amount of money the player gets using Vault
+money-rewards: 1000
 # Console commands
-console-commands:
-    - "give {player} diamond 5" # {player} is the player's name
-    - "give {player} emerald 10" # {player} is the player's name
-    - "give {player} golden_apple 1" # {player} is the player's name
-    - "say hi"
+console-commands: "say {player} has been afk for {afktime} seconds!"
 # Item rewards
-afk-rewards:
-    - "diamond x5"
-    - "emerald x10"
-    - "golden apple x1"
+item-rewards: "DIAMOND:3, GOLD_INGOT:10, IRON_INGOT:20"
+
     
     
 # Spams console with this error

@@ -35,8 +35,7 @@ public final class Main extends JavaPlugin implements Listener {
   private final Map<Player, Integer> afkTime = new HashMap<>();
   private final AtomicInteger afkTimeCounter = new AtomicInteger();
   private Economy economy;
-  BarColor barColor = BarColor.valueOf(this.getConfig().getString("boss-bar-color").toUpperCase());
-  BossBar bossBar = Bukkit.createBossBar(getConfig().getString("boss-bar-message").replace("{afktime}", Integer.toString(afkTimeCounter.get())), barColor, BarStyle.SOLID);
+ 
   
   @EventHandler
   public void onRegionEnter(RegionEnterEvent e) {
@@ -55,7 +54,7 @@ public final class Main extends JavaPlugin implements Listener {
                     getLogger().info(player.getName() + " has been AFK for " + afkTime.get() + " seconds");
                 }
                   // Update the boss bar title with the new afk time value
-                  bossBar.setTitle(getConfig().getString("boss-bar-message").replace("{afktime}", Integer.toString(afkTime.get())));
+                  
               }
           }, 0L, 20L);
       }
@@ -63,26 +62,11 @@ public final class Main extends JavaPlugin implements Listener {
 
   
       int rewardTime = this.getConfig().getInt("time");
-      List<String> rewards = this.getConfig().getStringList("afk-rewards");
-      List<Integer> money = this.getConfig().getIntegerList("money-rewards");
-      List<String> commands = this.getConfig().getStringList("console-commands");
+      String rewards = this.getConfig().getString("item-rewards");
+      int money = this.getConfig().getInt("money-rewards");
+      String commands = this.getConfig().getString("console-commands");
       int afkTime = this.afkTime.getOrDefault(player, 0);
       String regionIdEquals = this.getConfig().getString("afk-region");
-      double progress = (double) afkTime / rewardTime;
-      if (this.getConfig().getBoolean("boss-bar")) {
-        bossBar.addPlayer(player);
-        
-
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-            public void run() {
-              if (getConfig().getBoolean("Debug")) {
-                getLogger().info("Boss bar update scheduled for " + player.getName() + " every second");
-            }
-                bossBar.setTitle(getConfig().getString("boss-bar-message").replace("{afktime}", Integer.toString(afkTimeCounter.get())));
-                bossBar.setProgress(progress);
-            }
-        }, 0L, 20L);
-    }
   
       Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
           public void run() {
@@ -93,27 +77,24 @@ public final class Main extends JavaPlugin implements Listener {
                   if (afkTime >= rewardTime) {
                       // Give itemstacks
                       
-                      for (String reward : rewards) {
-                          String[] parts = reward.split(" x");
-                          Material material = Material.matchMaterial(parts[0]);
-                          int quantity = Integer.parseInt(parts[1]);
-                          ItemStack itemStack = new ItemStack(material, quantity);
-                          player.getInventory().addItem(itemStack);
+                      // Give item rewards
+                      for (String reward : rewards.split(",")) {
+                          String[] rewardSplit = reward.split(":");
+                          String material = rewardSplit[0];
+                          int amount = Integer.parseInt(rewardSplit[1]);
+                          player.getInventory().addItem(new ItemStack(Material.getMaterial(material), amount));
                       }
+                      
                       
   
                       // Money Rewards
-                      for (Integer moneyReward : money) {
-                        economy.depositPlayer(player, (double)moneyReward);
-                    }
+                      economy.depositPlayer(player, money);
   
                       // Execute console commands
-                      for (String command : commands) {
-                          ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-                          String command2 = command.replace("{player}", player.getName());
-                          Bukkit.dispatchCommand(console, command2);
+                      ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+                      for (String command : commands.split(",")) {
+                          Bukkit.dispatchCommand(console, command.replace("{player}", player.getName()));
                       }
-                      bossBar.setProgress(0);
                   }
                   if (getConfig().getBoolean("Debug")) {
                     getLogger().info(player.getName() + " has received " + money + " " + rewards + " " + commands + " for being AFK for " + afkTime + " seconds");
@@ -132,7 +113,6 @@ public final class Main extends JavaPlugin implements Listener {
   
       // Remove the task that increments the AFK time
       Bukkit.getScheduler().cancelTasks(this);
-      bossBar.removePlayer(player);
   
       // Reset the AFK time for the player
       this.afkTime.put(player, 0);
